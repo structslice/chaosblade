@@ -85,6 +85,7 @@ func (ssc *StartServerCommand) start() error {
 	if ssc.ip != "" {
 		args = fmt.Sprintf("%s --ip %s", args, ssc.ip)
 	}
+	fmt.Println(args)
 	response := cl.Run(context.TODO(), "nohup", fmt.Sprintf("%s > /dev/null 2>&1 &", args))
 	if !response.Success {
 		return response
@@ -126,6 +127,7 @@ func (ssc *StartServerCommand) start0() {
 		}
 	}()
 	Register("/chaosblade")
+	RegisterHealthRouter()
 	util.Hold()
 }
 
@@ -153,7 +155,12 @@ func Register(requestPath string) {
 		}
 	})
 }
-
+func RegisterHealthRouter() {
+	http.HandleFunc("/health", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprint(writer, "ok")
+		return
+	})
+}
 func startServerExample() string {
 	return `blade server start --port 8000`
 }
