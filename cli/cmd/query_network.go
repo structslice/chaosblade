@@ -29,7 +29,11 @@ type QueryNetworkCommand struct {
 	baseCommand
 }
 
-const InterfaceArg = "interface"
+const (
+	InterfaceArg   = "interface"
+	IpArg          = "ip"
+	InterfaceIpArg = "interface_ip"
+)
 
 func (qnc *QueryNetworkCommand) Init() {
 	qnc.command = &cobra.Command{
@@ -63,6 +67,41 @@ func (qnc *QueryNetworkCommand) queryNetworkInfo(command *cobra.Command, arg str
 			}
 		}
 		command.Println(spec.ReturnSuccess(names))
+
+	// add query network ip action  by fuzz
+	case IpArg:
+		interfaceaddrs, err := net.InterfaceAddrs()
+		if err != nil {
+			return err
+		}
+		ips := make([]string, 0)
+		for _, i := range interfaceaddrs {
+			ips = append(ips, i.String())
+		}
+		command.Println(spec.ReturnSuccess(ips))
+	// add query network ip action  by fuzz
+	case InterfaceIpArg:
+		interfaces, err := net.Interfaces()
+		if err != nil {
+			return err
+		}
+		interface_ip_map := make(map[string]interface{}, 0)
+		for _, i := range interfaces {
+			if strings.Contains(i.Flags.String(), "up") {
+				addrs, err := i.Addrs()
+				if err == nil {
+					address := []string{}
+					for _, addr := range addrs {
+						address = append(address, addr.String())
+					}
+					interface_ip_map[i.Name] = address
+				} else {
+					interface_ip_map[i.Name] = err
+				}
+
+			}
+		}
+		command.Println(spec.ReturnSuccess(interface_ip_map))
 	default:
 		return fmt.Errorf("the %s argument not found", arg)
 	}
