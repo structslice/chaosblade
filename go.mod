@@ -20,4 +20,4 @@ require (
 	sigs.k8s.io/controller-runtime v0.5.3
 )
 
-replace github.com/chaosblade-io/chaosblade-exec-os v0.9.0 => github.com/structslice/chaosblade-exec-os v0.8.1-0.20210126050045-f3e3a575b8f3
+replace github.com/chaosblade-io/chaosblade-exec-os v0.9.0 => github.com/structslice/chaosblade-exec-os v0.9.1
