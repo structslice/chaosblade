@@ -7,6 +7,7 @@ require (
 	github.com/chaosblade-io/chaosblade-exec-os v0.9.0
 	github.com/chaosblade-io/chaosblade-operator v0.9.0
 	github.com/chaosblade-io/chaosblade-spec-go v0.9.0
+	github.com/go-ole/go-ole v1.2.5 // indirect
 	github.com/mattn/go-sqlite3 v1.10.1-0.20190217174029-ad30583d8387
 	github.com/prometheus/common v0.9.1
 	github.com/shirou/gopsutil v2.20.5+incompatible
@@ -18,3 +19,5 @@ require (
 	k8s.io/client-go v12.0.0+incompatible
 	sigs.k8s.io/controller-runtime v0.5.3
 )
+
+replace github.com/chaosblade-io/chaosblade-exec-os v0.9.0 => github.com/structslice/chaosblade-exec-os v0.8.1-0.20210126050045-f3e3a575b8f3

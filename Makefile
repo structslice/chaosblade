@@ -15,10 +15,10 @@ BLADE_SRC_ROOT=$(shell pwd)
 
 GO_ENV=CGO_ENABLED=1
 GO_MODULE=GO111MODULE=on
-VERSION_PKG=github.com/chaosblade-io/chaosblade/version
+VERSION_PKG=github.com/structslice/chaosblade/version
 # Specify chaosblade version in docker experiments
-DOCKER_BLADE_VERSION=github.com/chaosblade-io/chaosblade-exec-docker/version
-OS_BLADE_VERSION=github.com/chaosblade-io/chaosblade-exec-os/version
+DOCKER_BLADE_VERSION=github.com/structslice/chaosblade-exec-docker/version
+OS_BLADE_VERSION=github.com/structslice/chaosblade-exec-os/version
 
 GO_X_FLAGS=-X ${VERSION_PKG}.Ver=$(BLADE_VERSION) -X '${VERSION_PKG}.Env=`uname -mv`' -X '${VERSION_PKG}.BuildTime=`date`' -X ${DOCKER_BLADE_VERSION}.BladeVersion=$(BLADE_VERSION) -X ${OS_BLADE_VERSION}.BladeVersion=$(BLADE_VERSION)
 GO_FLAGS=-ldflags="$(GO_X_FLAGS) -s -w"
@@ -42,16 +42,16 @@ BUILD_ARM_IMAGE_PATH=build/image/blade_arm
 BUILD_TARGET_CACHE=$(BUILD_TARGET)/cache
 
 # chaosblade-exec-os
-BLADE_EXEC_OS_PROJECT=https://github.com/chaosblade-io/chaosblade-exec-os.git
-BLADE_EXEC_OS_BRANCH=master
+BLADE_EXEC_OS_PROJECT=https://github.com/structslice/chaosblade-exec-os.git
+BLADE_EXEC_OS_BRANCH=autohome
 
 # chaosblade-exec-docker
-BLADE_EXEC_DOCKER_PROJECT=https://github.com/chaosblade-io/chaosblade-exec-docker.git
-BLADE_EXEC_DOCKER_BRANCH=master
+BLADE_EXEC_DOCKER_PROJECT=https://github.com/structslice/chaosblade-exec-docker.git
+BLADE_EXEC_DOCKER_BRANCH=autohome
 
 # chaosblade-exec-kubernetes
-BLADE_OPERATOR_PROJECT=https://github.com/chaosblade-io/chaosblade-operator.git
-BLADE_OPERATOR_BRANCH=master
+BLADE_OPERATOR_PROJECT=https://github.com/structslice/chaosblade-operator.git
+BLADE_OPERATOR_BRANCH=autohome
 
 # chaosblade-exec-jvm
 BLADE_EXEC_JVM_PROJECT=https://github.com/chaosblade-io/chaosblade-exec-jvm.git
