@@ -33,6 +33,7 @@ import (
 
 const startServerKey = "blade server start --nohup"
 const APIPublicKey = "devops.autohome.cc.chaosblade.io"
+const APIPublicIV = "autohome.com.cn."
 
 type StartServerCommand struct {
 	baseCommand
@@ -177,7 +178,8 @@ func RegisterHealthRouter() {
 
 func Auth(ts, token string) bool {
 	AesKey := []byte(APIPublicKey)
-	origin, err := AesDecrypt([]byte(token), AesKey)
+	AesIV := []byte(APIPublicIV)
+	origin, err := AesDecrypt([]byte(token), AesKey, AesIV)
 	if err == nil && string(origin) == ts {
 		return true
 	}

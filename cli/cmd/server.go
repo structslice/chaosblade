@@ -63,21 +63,21 @@ func PKCS7UnPadding(origData []byte) []byte {
 }
 
 //AES加密,CBC
-func AesEncrypt(origData, key []byte) ([]byte, error) {
+func AesEncrypt(origData, key, iv []byte) ([]byte, error) {
 	block, err := aes.NewCipher(key)
 	if err != nil {
 		return nil, err
 	}
 	blockSize := block.BlockSize()
 	origData = PKCS7Padding(origData, blockSize)
-	blockMode := cipher.NewCBCEncrypter(block, key[:blockSize])
+	blockMode := cipher.NewCBCEncrypter(block, iv)
 	crypted := make([]byte, len(origData))
 	blockMode.CryptBlocks(crypted, origData)
 	return crypted, nil
 }
 
 //AES解密
-func AesDecrypt(crypted, key []byte) ([]byte, error) {
+func AesDecrypt(crypted, key, iv []byte) ([]byte, error) {
 	data, err := base64.StdEncoding.DecodeString(string(crypted))
 	if err != nil {
 		return nil, err
@@ -86,8 +86,7 @@ func AesDecrypt(crypted, key []byte) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	blockSize := block.BlockSize()
-	blockMode := cipher.NewCBCDecrypter(block, key[:blockSize])
+	blockMode := cipher.NewCBCDecrypter(block, iv)
 	origData := make([]byte, len(data))
 	blockMode.CryptBlocks(origData, data)
 	origData = PKCS7UnPadding(origData)
