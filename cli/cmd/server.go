@@ -20,6 +20,7 @@ import (
 	"bytes"
 	"crypto/aes"
 	"crypto/cipher"
+	"encoding/base64"
 	"fmt"
 
 	"github.com/chaosblade-io/chaosblade-spec-go/spec"
@@ -77,14 +78,18 @@ func AesEncrypt(origData, key []byte) ([]byte, error) {
 
 //AES解密
 func AesDecrypt(crypted, key []byte) ([]byte, error) {
+	data, err := base64.StdEncoding.DecodeString(string(crypted))
+	if err != nil {
+		return nil, err
+	}
 	block, err := aes.NewCipher(key)
 	if err != nil {
 		return nil, err
 	}
 	blockSize := block.BlockSize()
 	blockMode := cipher.NewCBCDecrypter(block, key[:blockSize])
-	origData := make([]byte, len(crypted))
-	blockMode.CryptBlocks(origData, crypted)
+	origData := make([]byte, len(data))
+	blockMode.CryptBlocks(origData, data)
 	origData = PKCS7UnPadding(origData)
 	return origData, nil
 }

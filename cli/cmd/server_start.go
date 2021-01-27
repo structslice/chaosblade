@@ -140,18 +140,19 @@ func Register(requestPath string) {
 				spec.ReturnFail(spec.Code[spec.IllegalParameters], err.Error()).Print())
 			return
 		}
-		ts := request.Form["ts"]
-		token := request.Form["token"]
+		ts := request.Header.Get("ts")
+		token := request.Header.Get("token")
 		if len(ts) == 0 || len(token) == 0 {
 			fmt.Fprintf(writer,
 				spec.ReturnFail(spec.Code[spec.IllegalParameters], "illegal ts or token parameter").Print())
 			return
 		}
-		if !Auth(ts[0], token[0]) {
+		if !Auth(ts, token) {
 			fmt.Fprintf(writer,
 				spec.ReturnFail(spec.Code[spec.Forbidden], "authentication faild").Print())
 			return
 		}
+
 		cmds := request.Form["cmd"]
 		if len(cmds) != 1 {
 			fmt.Fprintf(writer,
