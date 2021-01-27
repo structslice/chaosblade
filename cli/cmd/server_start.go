@@ -32,6 +32,7 @@ import (
 )
 
 const startServerKey = "blade server start --nohup"
+const APIPublicKey = "devops.autohome.cc.chaosblade.io"
 
 type StartServerCommand struct {
 	baseCommand
@@ -139,7 +140,18 @@ func Register(requestPath string) {
 				spec.ReturnFail(spec.Code[spec.IllegalParameters], err.Error()).Print())
 			return
 		}
-
+		ts := request.Form["ts"]
+		token := request.Form["token"]
+		if len(ts) == 0 || len(token) == 0 {
+			fmt.Fprintf(writer,
+				spec.ReturnFail(spec.Code[spec.IllegalParameters], "illegal ts or token parameter").Print())
+			return
+		}
+		if !Auth(ts[0], token[0]) {
+			fmt.Fprintf(writer,
+				spec.ReturnFail(spec.Code[spec.Forbidden], "authentication faild").Print())
+			return
+		}
 		cmds := request.Form["cmd"]
 		if len(cmds) != 1 {
 			fmt.Fprintf(writer,
@@ -160,6 +172,15 @@ func RegisterHealthRouter() {
 		fmt.Fprint(writer, "ok")
 		return
 	})
+}
+
+func Auth(ts, token string) bool {
+	AesKey := []byte(APIPublicKey)
+	origin, err := AesDecrypt([]byte(token), AesKey)
+	if err == nil && string(origin) == ts {
+		return true
+	}
+	return false
 }
 func startServerExample() string {
 	return `blade server start --port 8000`
