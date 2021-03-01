@@ -42,16 +42,16 @@ BUILD_ARM_IMAGE_PATH=build/image/blade_arm
 BUILD_TARGET_CACHE=$(BUILD_TARGET)/cache
 
 # chaosblade-exec-os
-BLADE_EXEC_OS_PROJECT=https://github.com/chaosblade-io/chaosblade-exec-os.git
-BLADE_EXEC_OS_BRANCH=master
+BLADE_EXEC_OS_PROJECT=https://github.com/structslice/chaosblade-exec-os.git
+BLADE_EXEC_OS_BRANCH=autohome
 
 # chaosblade-exec-docker
-BLADE_EXEC_DOCKER_PROJECT=https://github.com/chaosblade-io/chaosblade-exec-docker.git
-BLADE_EXEC_DOCKER_BRANCH=master
+BLADE_EXEC_DOCKER_PROJECT=https://github.com/structslice/chaosblade-exec-docker.git
+BLADE_EXEC_DOCKER_BRANCH=autohome
 
 # chaosblade-exec-kubernetes
-BLADE_OPERATOR_PROJECT=https://github.com/chaosblade-io/chaosblade-operator.git
-BLADE_OPERATOR_BRANCH=master
+BLADE_OPERATOR_PROJECT=https://github.com/structslice/chaosblade-operator.git
+BLADE_OPERATOR_BRANCH=autohome
 
 # chaosblade-exec-jvm
 BLADE_EXEC_JVM_PROJECT=https://github.com/chaosblade-io/chaosblade-exec-jvm.git
