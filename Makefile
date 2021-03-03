@@ -8,7 +8,7 @@ GITVERSION:=$(shell git --version | grep ^git | sed 's/^.* //g')
 ifneq ($(strip $(firstword $(sort $(GITVERSION), $(ALLOWGITVERSION)))),$(ALLOWGITVERSION))
 	ALERTMSG="please update git to >= $(ALLOWGITVERSION)"
 endif
-
+DockerImageHub=thub.autohome.com.cn/ops-cache
 BLADE_BIN=blade
 BLADE_EXPORT=chaosblade-$(BLADE_VERSION).tgz
 BLADE_SRC_ROOT=$(shell pwd)
@@ -185,7 +185,7 @@ build_image: ## Build chaosblade-tool image
 	tar zxvf $(BUILD_TARGET_PKG_NAME) -C $(BUILD_IMAGE_PATH)
 	docker build -f $(BUILD_IMAGE_PATH)/Dockerfile \
 		--build-arg BLADE_VERSION=$(BLADE_VERSION) \
-		-t chaosblade-tool:$(BLADE_VERSION) \
+		-t $(DockerImageHub)/chaosblade-tool:$(BLADE_VERSION) \
 		$(BUILD_IMAGE_PATH)
 	rm -rf $(BUILD_IMAGE_PATH)/$(BUILD_TARGET_DIR_NAME)
 
@@ -195,7 +195,7 @@ build_image_arm: ## Build chaosblade-tool-arm image
 	tar zxvf $(BUILD_TARGET_PKG_NAME) -C $(BUILD_ARM_IMAGE_PATH)
 	docker build -f $(BUILD_ARM_IMAGE_PATH)/Dockerfile \
 		--build-arg BLADE_VERSION=$(BLADE_VERSION) \
-		-t chaosblade-tool-arm:$(BLADE_VERSION) \
+		-t $(DockerImageHub)/chaosblade-tool-arm:$(BLADE_VERSION) \
 		$(BUILD_ARM_IMAGE_PATH)
 	rm -rf $(BUILD_ARM_IMAGE_PATH)/$(BUILD_TARGET_DIR_NAME)
 
@@ -203,7 +203,7 @@ build_image_arm: ## Build chaosblade-tool-arm image
 docker_image: clean ## Build chaosblade image
 	docker build -f ./Dockerfile \
 		--build-arg BLADE_VERSION=$(BLADE_VERSION) \
-		-t chaosblade:$(BLADE_VERSION) $(BLADE_SRC_ROOT)
+		-t $(DockerImageHub)/chaosblade:$(BLADE_VERSION) $(BLADE_SRC_ROOT)
 
 build_upx_image:
 	docker build --rm \
