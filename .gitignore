@@ -42,7 +42,7 @@ tags
 /bin/java-agent*.jar
 /hack/chaosblade*
 /hack/lib/**
-/chaosblade.dat
+/cli/cmd/chaosblade.dat
 target
 coverage.txt
 vendor
