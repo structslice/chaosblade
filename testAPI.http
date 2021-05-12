@@ -1,6 +1,37 @@
 ###
-GET http://127.0.0.1:9526/chaosblade?cmd=query network ip
+GET http://10.168.99.137:9526/chaosblade?cmd=query network ip
 ts: 1611738517
 token: IuUkhbwLhY+BvK6wasikxoIprBz83uDFzUKcU+vr8bo=
 
 ###
+
+GET http://10.168.99.137:9526/chaosblade?cmd=create mem load --mode ram --mem-percent 50
+ts: 1611738517
+token: IuUkhbwLhY+BvK6wasikxoIprBz83uDFzUKcU+vr8bo=
+
+###
+GET http://10.168.99.137:9526/chaosblade?cmd=destroy 07ee88b6bc49044c
+ts: 1611738517
+token: IuUkhbwLhY+BvK6wasikxoIprBz83uDFzUKcU+vr8bo=
+
+
+###
+POST http://10.168.99.137:9526/metric-collect
+Content-Type: application/json
+ts: 1611738517
+token: IuUkhbwLhY+BvK6wasikxoIprBz83uDFzUKcU+vr8bo=
+
+{"metric":"cpu","args":{"--cpu-list":"1,2","--cpu-count":"1"},"interval":"5s"}
+
+###
+GET http://10.168.99.137:9526/metric-collect
+ts: 1611738517
+token: IuUkhbwLhY+BvK6wasikxoIprBz83uDFzUKcU+vr8bo=
+
+###
+DELETE http://10.168.99.137:9526/metric-collect
+Content-Type: application/json
+ts: 1611738517
+token: IuUkhbwLhY+BvK6wasikxoIprBz83uDFzUKcU+vr8bo=
+
+{"metric":"cpu","args":{"--cpu-list":"1,2","--cpu-count":"1"},"interval":"10s"}

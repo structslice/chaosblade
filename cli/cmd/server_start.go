@@ -18,7 +18,10 @@ package cmd
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"github.com/chaosblade-io/chaosblade/metric"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"path"
@@ -120,6 +123,7 @@ func (ssc *StartServerCommand) start() error {
 
 // start0 starts web service
 func (ssc *StartServerCommand) start0() {
+	go metric.MetricCollector.Start()
 	go func() {
 		err := http.ListenAndServe(ssc.ip+":"+ssc.port, nil)
 		if err != nil {
@@ -130,6 +134,7 @@ func (ssc *StartServerCommand) start0() {
 	}()
 	Register("/chaosblade")
 	RegisterHealthRouter()
+	RegisterMetricCollect()
 	util.Hold()
 }
 
@@ -177,6 +182,13 @@ func RegisterHealthRouter() {
 }
 
 func Auth(ts, token string) bool {
+	//dt_ts, err := strconv.ParseInt(ts, 10, 64)
+	//if err != nil {
+	//	return false
+	//}
+	//if time.Now().Unix()-dt_ts > 60 {
+	//	return false
+	//}
 	AesKey := []byte(APIPublicKey)
 	AesIV := []byte(APIPublicIV)
 	origin, err := AesDecrypt([]byte(token), AesKey, AesIV)
@@ -185,6 +197,86 @@ func Auth(ts, token string) bool {
 	}
 	return false
 }
+
+func RegisterMetricCollect() {
+	http.HandleFunc("/metric-collect", func(writer http.ResponseWriter, request *http.Request) {
+		ts := request.Header.Get("ts")
+		token := request.Header.Get("token")
+		if len(ts) == 0 || len(token) == 0 {
+			fmt.Fprintf(writer,
+				spec.ReturnFail(spec.Code[spec.IllegalParameters], "illegal ts or token parameter").Print())
+			return
+		}
+		if !Auth(ts, token) {
+			fmt.Fprintf(writer,
+				spec.ReturnFail(spec.Code[spec.Forbidden], "authentication faild").Print())
+			return
+		}
+		// 新建采集
+		if request.Method == "GET" {
+			fmt.Fprintf(writer,
+				spec.ReturnSuccess(metric.MetricCollector.CurrentWorker()).Print())
+			return
+
+		} else {
+			err := request.ParseForm()
+			if err != nil {
+				fmt.Fprintf(writer,
+					spec.ReturnFail(spec.Code[spec.IllegalParameters], err.Error()).Print())
+				return
+			}
+			json_body, _ := ioutil.ReadAll(request.Body)
+			fmt.Println(string(json_body))
+			var body metric.Indicator
+			if err := json.Unmarshal(json_body, &body); err != nil {
+				fmt.Fprintf(writer,
+					spec.ReturnFail(spec.Code[spec.IllegalParameters], "request body is invaild, json Unmarshal faild "+err.Error()).Print())
+				return
+			}
+			if len(body.Metric) == 0 {
+				fmt.Fprintf(writer,
+					spec.ReturnFail(spec.Code[spec.IllegalParameters], "request body loss metric ").Print())
+				return
+			}
+			//if len(body.Args) == 0 {
+			//	fmt.Fprintf(writer,
+			//		spec.ReturnFail(spec.Code[spec.IllegalParameters], "request body loss args ").Print())
+			//	return
+			//
+			//}
+			if len(body.Interval) == 0 {
+				body.Interval = "5s"
+			}
+			if request.Method == "POST" {
+				if metric.MetricCollector.Exists(&body) {
+					fmt.Fprintf(writer,
+						spec.ReturnFail(spec.Code[spec.DuplicateError], "collect worker is already exists").Print())
+					return
+				} else {
+					metric.MetricCollector.Send(&body)
+				}
+
+				fmt.Fprintf(writer,
+					spec.ReturnSuccess("start collect success").Print())
+			} else if request.Method == "DELETE" {
+				err := metric.MetricCollector.StopCollector(&body)
+				if err != nil {
+					fmt.Fprintf(writer,
+						spec.ReturnFail(spec.Code[spec.IllegalCommand], "collect worker not found").Print())
+					return
+				}
+				fmt.Fprintf(writer,
+					spec.ReturnSuccess("stop collect success").Print())
+			} else {
+				fmt.Fprintf(writer,
+					spec.ReturnFail(spec.Code[spec.ServerError], "405 not support method").Print())
+			}
+		}
+
+		return
+	})
+}
+
 func startServerExample() string {
 	return `blade server start --port 8000`
 }
