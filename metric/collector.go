@@ -38,6 +38,7 @@ type Collector struct {
 	indicator *counter.Indicator
 	storageC  chan []*counter.MetricData
 	cancel    func()
+	tags      map[string]string
 	Name      string
 	StartTime string
 }

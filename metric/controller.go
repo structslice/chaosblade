@@ -5,6 +5,9 @@ import (
 	"fmt"
 	"github.com/chaosblade-io/chaosblade/metric/counter"
 	"github.com/sirupsen/logrus"
+	"net"
+	"os"
+	"strings"
 	"sync"
 )
 
@@ -21,6 +24,7 @@ func (this *MetricCollect) Start() {
 	this.workers = make(map[string]*Collector)
 	this.indicatorC = make(chan *counter.Indicator)
 	this.storageC = make(chan []*counter.MetricData)
+
 	go this.report()
 	this.collect()
 }
@@ -30,6 +34,11 @@ func (this *MetricCollect) newcollector(indicator *counter.Indicator) *Collector
 		indicator: indicator,
 		storageC:  this.storageC,
 	}
+	collector.tags = map[string]string{}
+	hostname, _ := os.Hostname()
+	ip, _ := getSelfIp([]string{"10.28", "10.27"})
+	collector.tags["hostname"] = hostname
+	collector.tags["ip"] = ip
 	this.register(collector)
 	return collector
 
@@ -107,6 +116,30 @@ func (this *MetricCollect) report() {
 			fmt.Println(i.Metric, i.Value, i.Timestamp, i.Tags)
 		}
 	}
+}
+
+func getSelfIp(prefix []string) (string, error) {
+	addrs, err := net.InterfaceAddrs()
+	if err != nil {
+		return "", err
+	}
+	for _, address := range addrs {
+		// 检查ip地址判断是否回环地址
+		if ipnet, ok := address.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
+			if ipnet.IP.To4() != nil {
+				ip := ipnet.IP.String()
+				for _, p := range prefix {
+					if strings.Contains(ip, p) && strings.HasPrefix(ip, p) {
+						return ip, nil
+					}
+				}
+			}
+
+		}
+	}
+
+	return "", errors.New("Can not find self ip address!")
+
 }
 
 func init() {

@@ -21,6 +21,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/chaosblade-io/chaosblade/metric"
+	"github.com/chaosblade-io/chaosblade/metric/counter"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -227,7 +228,7 @@ func RegisterMetricCollect() {
 			}
 			json_body, _ := ioutil.ReadAll(request.Body)
 			fmt.Println(string(json_body))
-			var body metric.Indicator
+			var body counter.Indicator
 			if err := json.Unmarshal(json_body, &body); err != nil {
 				fmt.Fprintf(writer,
 					spec.ReturnFail(spec.Code[spec.IllegalParameters], "request body is invaild, json Unmarshal faild "+err.Error()).Print())
