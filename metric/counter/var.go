@@ -1,5 +1,7 @@
 package counter
 
+import "time"
+
 type MetricData struct {
 	Metric    string            `json:"metric"`
 	Tags      map[string]string `json:"tags"`
@@ -23,4 +25,11 @@ func MergTags(tag1, tag2 map[string]string) map[string]string {
 		new_tags[k] = v
 	}
 	return new_tags
+}
+
+func timeIt(f func() interface{}) (int64, interface{}) {
+	startAt := time.Now()
+	res := f()
+	endAt := time.Now()
+	return endAt.UnixNano() - startAt.UnixNano(), res
 }

@@ -3,7 +3,6 @@ package metric
 import (
 	"context"
 	"github.com/chaosblade-io/chaosblade/metric/counter"
-	"strconv"
 	"time"
 )
 
@@ -13,24 +12,11 @@ const (
 )
 
 func ParsTimeUnit(t string) time.Duration {
-	str_len := len(t)
-	if str_len == 0 {
-		return time.Duration(5) * time.Second
-	}
-	num, err := strconv.Atoi(t[0 : str_len-2])
+	duration, err := time.ParseDuration(t)
 	if err != nil {
 		return time.Duration(5) * time.Second
 	}
-	unit := string(t[len(t)-1])
-	switch unit {
-	case "s":
-		return time.Duration(num) * time.Second
-	case "m":
-		return time.Duration(num) * time.Minute
-	case "h":
-		return time.Duration(num) * time.Hour
-	}
-	return time.Duration(5) * time.Second
+	return duration
 }
 
 type Collector struct {
