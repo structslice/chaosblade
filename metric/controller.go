@@ -81,7 +81,10 @@ func (this *MetricCollect) collect() {
 			collector.run = counter.DiskBurnCollect
 		case "disk_fill":
 			collector.run = counter.DiskFillCollect
-
+		case "network_delay":
+			collector.run = counter.NetworkDelay
+		case "network_loss":
+			collector.run = counter.NetworkLoss
 		}
 		collector.start()
 	}

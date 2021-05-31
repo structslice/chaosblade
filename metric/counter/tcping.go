@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-type Target struct {
+type TCPingTarget struct {
 	Protocol string
 	Host     string
 	Port     int
@@ -15,34 +15,34 @@ type Target struct {
 	Timeout  time.Duration
 }
 type TCPing struct {
-	target *Target
+	target *TCPingTarget
 	done   chan struct{}
-	result *Result
+	result *TCPingResult
 }
-type Result struct {
+type TCPingResult struct {
 	Counter        int
 	SuccessCounter int
-	Target         *Target
+	Target         *TCPingTarget
 
 	MinDuration   time.Duration
 	MaxDuration   time.Duration
 	TotalDuration time.Duration
 }
 
-func (result Result) Avg() time.Duration {
+func (result *TCPingResult) Avg() time.Duration {
 	if result.SuccessCounter == 0 {
-		return 0
+		return result.Target.Timeout
 	}
 	return result.TotalDuration / time.Duration(result.SuccessCounter)
 }
 
 // Failed return failed counter
-func (result Result) Failed() int {
+func (result *TCPingResult) Failed() int {
 	return result.Counter - result.SuccessCounter
 }
 
 // Start a tcping
-func (tcping TCPing) Start() <-chan struct{} {
+func (tcping *TCPing) Start() <-chan struct{} {
 	go func() {
 		t := time.NewTicker(tcping.target.Interval)
 		defer t.Stop()
@@ -88,7 +88,7 @@ func (tcping *TCPing) Stop() {
 	tcping.done <- struct{}{}
 }
 
-func (tcping TCPing) ping() (time.Duration, net.Addr, error) {
+func (tcping *TCPing) ping() (time.Duration, net.Addr, error) {
 	var remoteAddr net.Addr
 	duration, errIfce := timeIt(func() interface{} {
 		conn, err := net.DialTimeout("tcp", fmt.Sprintf("%s:%d", tcping.target.Host, tcping.target.Port), tcping.target.Timeout)
