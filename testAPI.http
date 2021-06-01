@@ -21,7 +21,7 @@ Content-Type: application/json
 ts: 1611738517
 token: IuUkhbwLhY+BvK6wasikxoIprBz83uDFzUKcU+vr8bo=
 
-{"metric":"cpu","args":{"--cpu-list":"1,2","--cpu-count":"1"},"interval":"5s"}
+{"metric":"network_loss","args":{"--destination-ip":"10.168.99.142","--remote-port":"18090,19000","--time": "1000"},"interval":"5s"}
 
 ###
 GET http://10.168.99.137:9526/metric-collect
@@ -34,4 +34,4 @@ Content-Type: application/json
 ts: 1611738517
 token: IuUkhbwLhY+BvK6wasikxoIprBz83uDFzUKcU+vr8bo=
 
-{"metric":"cpu","args":{"--cpu-list":"1,2","--cpu-count":"1"},"interval":"10s"}
+{"metric":"network_loss","args":{"--cpu-list":"1,2","--cpu-count":"1"},"interval":"10s"}
